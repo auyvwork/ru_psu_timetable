@@ -5,22 +5,27 @@ import 'package:ru_psu_timetable/models/schedule_event.dart';
 class ScheduleCard extends StatelessWidget {
   final ScheduleEvent event;
   final String languageCode;
-  const ScheduleCard(
-      {super.key, required this.event, required this.languageCode});
+
+  const ScheduleCard({
+    super.key,
+    required this.event,
+    required this.languageCode,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat timeFormatter = DateFormat('HH:mm', languageCode);
-    final String timeRange =
-        '${timeFormatter.format(event.startTime)} – ${timeFormatter.format(event.endTime)}';
-    final String date = DateFormat('EEE, d MMM', languageCode).format(event.startTime);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final timeFormatter = DateFormat('HH:mm', languageCode);
+    final timeRange = '${timeFormatter.format(event.startTime)} – ${timeFormatter.format(event.endTime)}';
 
     return Card(
-      color: Theme.of(context).colorScheme.surface ,
+      color: colorScheme.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(50),
+          color: colorScheme.onSurfaceVariant.withAlpha(50),
           width: 1.0,
         ),
         borderRadius: BorderRadius.circular(12.0),
@@ -31,44 +36,38 @@ class ScheduleCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  timeRange,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.normal,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
 
-              ],
+            // Время
+            Text(
+              timeRange,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.normal,
+                color: colorScheme.primary,
+              ),
             ),
 
+            // Название
             Text(
-
               event.summary,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.normal,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 10),
-            _buildCompactInfoRow(
-              context,
-              Icons.calendar_today_outlined,
-              date,
-            ),
-            const SizedBox(height: 6),
-            if (event.location.isNotEmpty)
+            const SizedBox(height: 8),
+
+            // Локация
+            if (event.location.isNotEmpty) ...[
               _buildCompactInfoRow(
                 context,
                 Icons.location_on_outlined,
                 event.location,
               ),
-            if (event.location.isNotEmpty) const SizedBox(height: 6),
+              const SizedBox(height: 6),
+            ],
+
+            // Преподаватель
             if (event.description.isNotEmpty)
               _buildCompactInfoRow(
                 context,
@@ -82,20 +81,23 @@ class ScheduleCard extends StatelessWidget {
   }
 
   Widget _buildCompactInfoRow(BuildContext context, IconData icon, String value, {Color? valueColor}) {
+    final theme = Theme.of(context);
+    final onSurfaceVariant = theme.colorScheme.onSurfaceVariant;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(
           icon,
           size: 18,
-          color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
+          color: onSurfaceVariant.withOpacity(0.7),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            value.isEmpty ? 'Не указано' : value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: valueColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: valueColor ?? onSurfaceVariant,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

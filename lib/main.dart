@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ru_psu_timetable/screens/schedule_screen.dart';
+import 'package:ru_psu_timetable/services/schedule_service.dart';
 import 'package:ru_psu_timetable/settings/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -12,6 +15,7 @@ const String _themeKey = 'app_theme_mode';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await initializeDateFormatting('ru', null);
   await initializeDateFormatting('en', null);

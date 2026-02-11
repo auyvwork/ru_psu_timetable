@@ -68,7 +68,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
         final events = jsonList
             .map((jsonString) =>
 
-        ScheduleEvent.fromJson(json.decode(jsonString)))
+            ScheduleEvent.fromJson(json.decode(jsonString)))
             .toList();
         _updateScheduleAndTabs(events);
         _setStatus(
@@ -203,6 +203,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       extendBody: true,
       appBar: AppBar(
         title: Text(getTranslatedString(locale, 'schedule_title')),
