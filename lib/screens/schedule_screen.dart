@@ -203,6 +203,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
         title: Text(getTranslatedString(locale, 'schedule_title')),
         elevation: 0,

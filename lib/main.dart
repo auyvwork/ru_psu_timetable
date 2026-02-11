@@ -1,9 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 import 'package:ru_psu_timetable/screens/schedule_screen.dart';
 import 'package:ru_psu_timetable/settings/app_theme.dart';
-import 'package:ru_psu_timetable/settings/language.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +12,7 @@ const String _themeKey = 'app_theme_mode';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   await initializeDateFormatting('ru', null);
   await initializeDateFormatting('en', null);
   Intl.defaultLocale = 'ru';
@@ -93,31 +93,25 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: getTranslatedString(_locale, 'schedule_title'),
-          theme: Themes.createTheme(lightDynamic, Brightness.light),
-          darkTheme: Themes.createTheme(darkDynamic, Brightness.dark),
-          themeMode: _themeMode,
-          locale: _locale,
-          supportedLocales: const [
-            Locale('ru', ''),
-            Locale('en', ''),
-          ],
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          localeResolutionCallback: (deviceLocale, supportedLocales) {
-            for (var locale in supportedLocales) {
-              if (locale.languageCode == deviceLocale?.languageCode) {
-                return deviceLocale;
-              }
-            }
-            return supportedLocales.first;
-          },
-          home: const ScheduleScreen(),
+        final isDark = _themeMode == ThemeMode.dark ||
+            (_themeMode == ThemeMode.system && MediaQuery.of(context).platformBrightness == Brightness.dark);
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle(
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarDividerColor: Colors.transparent,
+            systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+            systemNavigationBarContrastEnforced: false,
+            systemStatusBarContrastEnforced: false,
+          ),
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: Themes.createTheme(lightDynamic, Brightness.light),
+            darkTheme: Themes.createTheme(darkDynamic, Brightness.dark),
+            themeMode: _themeMode,
+            home: const ScheduleScreen(),
+          ),
         );
       },
     );
